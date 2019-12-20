@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">AccountBook</string>
+    <string name="title_tally">记账</string>
+    <string name="title_particular">详细</string>
+    <string name="title_summarizing">汇总</string>
+    <string name="fragment_tally__income_expenses_text">收支：</string>
+    <string name="fragment_tally__amount_text">金额：</string>
+    <string name="fragment_tally__time_text">日期：</string>
+    <string name="fragment_tally__remark_text">备注：</string>
+    <string name="fragment_tally__tally_save">保存</string>
+    <string name="tallyFragment_dialog_normal_more_button_content">是否保存？</string>
+    <string name="tallyFragment_dialog_btn_confirm_text">是</string>
+    <string name="tallyFragment_dialog_btn_cancel_text">否</string>
+    <string name="tallyFragment_dialog_btn_confirm_succeed_hint_text">保存成功</string>
+    <string name="tallyFragment_dialog_btn_confirm_defeated_hint_text">保存失败</string>
+    <string name="tallyFragment_dialog_btn_cancel_hint_text">取消保存</string>
+    <string name="incomeRecycleAdapter_dialog_normal_more_button_content">是否删除？</string>
+    <string name="incomeRecycleAdapter_dialog_btn_confirm_text">是</string>
+    <string name="incomeRecycleAdapter_dialog_btn_cancel_text">否</string>
+    <string name="incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text">删除成功</string>
+    <string name="incomeRecycleAdapter_dialog_btn_confirm_defeated_hint_text">删除失败</string>
+    <string name="incomeRecycleAdapter_dialog_btn_cancel_hint_text">取消删除</string>
+    <string name="incomeRecycleAdapter_dialog_text_show_particular">查看详情</string>
+    <string name="incomeRecycleAdapter_dialog_text_delete_item">删除此记录</string>
+</resources>

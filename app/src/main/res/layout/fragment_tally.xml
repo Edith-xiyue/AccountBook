@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFCC">
+
+    <LinearLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <include
+            layout="@layout/view_title" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/income_expenses_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:paddingRight="@dimen/dp_20"
+        android:paddingLeft="@dimen/dp_20"
+        android:layout_marginRight="@dimen/dp_20"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:background="@drawable/circular_bead_blue"
+        app:layout_constraintTop_toBottomOf="@+id/title">
+        <TextView
+            android:id="@+id/income_expenses_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/sp_20"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
+            android:text="@string/fragment_tally__income_expenses_text"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <Spinner
+            android:id="@+id/income_expenses_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/title"
+            app:layout_constraintLeft_toRightOf="@+id/income_expenses_text"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/amount_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:layout_marginRight="@dimen/dp_20"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_20"
+        android:paddingLeft="@dimen/dp_20"
+        android:background="@drawable/circular_bead_blue"
+        app:layout_constraintTop_toBottomOf="@+id/income_expenses_layout">
+        <TextView
+            android:id="@+id/amount_text"
+            android:text="@string/fragment_tally__amount_text"
+            android:textSize="@dimen/sp_20"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
+            android:textColor="@color/color_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <EditText
+            android:id="@+id/money"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp_18"
+            android:inputType="number|numberDecimal"
+            android:maxLength="8"
+            android:background="@null"
+            android:textColor="@color/color_black"
+            app:layout_constraintTop_toBottomOf="@+id/income_expenses_spinner"
+            app:layout_constraintLeft_toRightOf="@+id/amount_text"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:layout_marginRight="@dimen/dp_20"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_20"
+        android:paddingLeft="@dimen/dp_20"
+        android:background="@drawable/circular_bead_blue"
+        app:layout_constraintTop_toBottomOf="@+id/amount_layout">
+        <TextView
+            android:id="@+id/time_text"
+            android:text="@string/fragment_tally__time_text"
+            android:textSize="@dimen/sp_20"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
+            android:textColor="@color/color_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp_18"
+            android:textColor="@color/color_black"
+            app:layout_constraintTop_toBottomOf="@+id/income_expenses_spinner"
+            app:layout_constraintLeft_toRightOf="@+id/amount_text"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/remark_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:layout_marginRight="@dimen/dp_20"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_20"
+        android:paddingLeft="@dimen/dp_20"
+        android:background="@drawable/circular_bead_blue"
+        app:layout_constraintTop_toBottomOf="@+id/time_layout">
+        <TextView
+            android:id="@+id/remark_text"
+            android:text="@string/fragment_tally__remark_text"
+            android:textSize="@dimen/sp_20"
+            android:paddingTop="@dimen/dp_10"
+            android:paddingBottom="@dimen/dp_10"
+            android:textColor="@color/color_black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <EditText
+            android:id="@+id/remark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/sp_18"
+            android:maxLines="3"
+            android:maxLength="30"
+            android:background="@null"
+            android:paddingBottom="@dimen/dp_20"
+            android:paddingRight="@dimen/dp_20"
+            android:textColor="@color/color_black"
+            android:inputType="textMultiLine"
+            app:layout_constraintTop_toBottomOf="@+id/income_expenses_spinner"
+            app:layout_constraintLeft_toRightOf="@+id/amount_text"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/tally_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:text="@string/fragment_tally__tally_save"
+        android:background="@drawable/custom_button_selector"
+        app:layout_constraintTop_toBottomOf="@+id/remark_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
