@@ -19,4 +19,6 @@
     <color name="color_red">@android:color/holo_red_light</color>
     <color name="color_green">@android:color/holo_green_light</color>
     <color name="color_transparent">@android:color/transparent</color>
+    <color name="main_fragment_background_color">#FFFFCC</color>
+    <color name="fragment_summarizing_tabLayout_background_color">#E7E76D</color>
 </resources>

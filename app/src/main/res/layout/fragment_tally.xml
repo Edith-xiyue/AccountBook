@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFCC">
+    android:background="@color/main_fragment_background_color">
 
     <LinearLayout
         android:id="@+id/title"

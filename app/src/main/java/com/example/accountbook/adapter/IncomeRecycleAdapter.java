@@ -102,7 +102,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
             SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
             dateStr = dateformat.format(incomeEntities.get(sPosition).getIncomeTime());
             time.setText(dateStr);
-            money.setText(incomeEntities.get(sPosition).getIncomeMoney());
+            money.setText(String.valueOf(incomeEntities.get(sPosition).getIncomeMoney()));
         }
 
 
@@ -197,23 +197,25 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
         customDialog.show();
         customDialog.setClickListener(new CustomDialog.ClickListenerInterface() {
             @Override
-            public void doConfirm() {try{ IncomeEntity entity = incomeEntities.get(position);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        IncomeDao incomeDao = MyDataBase.getInstance().getIncomeDao();
-                        IncomeEntity entity1 = incomeDao.getIncomeEntity(entity.getIncomeTime());
-                        incomeDao.delete(entity1);
-                    }
-                }).start();
-                incomeEntities.remove(position);
-                MainActivity.getIncomeRecycleAdapter().notifyDataSetChanged();
-                ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text));
+            public void doConfirm() {
+                try{
+                    IncomeEntity entity = incomeEntities.get(position);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            IncomeDao incomeDao = MyDataBase.getInstance().getIncomeDao();
+                            IncomeEntity entity1 = incomeDao.getIncomeEntity(entity.getIncomeTime());
+                            incomeDao.delete(entity1);
+                        }
+                    }).start();
+                    incomeEntities.remove(position);
+                    MainActivity.getIncomeRecycleAdapter().notifyItemInserted(incomeEntities.size() - 1);;
+                    ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text));
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_defeated_hint_text));
-            }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_defeated_hint_text));
+                }
                 customDialog.dismiss();
             }
 

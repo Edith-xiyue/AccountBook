@@ -203,7 +203,7 @@ public class CustomDialog extends Dialog {
         if (displayBox){
             SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             dateStr = dateformat.format(entity.getIncomeTime());
-            dialogShowText.setText(entity.getIncomeMoney());
+            dialogShowText.setText(String.valueOf(entity.getIncomeMoney()));
             dialogShowTime.setText(dateStr);
             dialogShowRemark.setText("    "+ entity.getIncomeRemark());
         }

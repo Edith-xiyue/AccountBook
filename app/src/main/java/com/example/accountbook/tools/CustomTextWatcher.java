@@ -48,11 +48,14 @@ public class CustomTextWatcher implements TextWatcher {
         //如果起始位置为0,且第二位跟的不是".",则无法后续输入
         if (s.toString().startsWith("0")
                 && s.toString().trim().length() > 1) {
-            StringBuffer stringBuffer = new StringBuffer(s);
-            stringBuffer.deleteCharAt(0);
-            editText.setText(stringBuffer);
-            editText.setSelection(1);
-            return;
+            if (!s.toString().substring(1, 2).equals(".")) {
+                StringBuffer stringBuffer = new StringBuffer(s);
+                stringBuffer.deleteCharAt(0);
+                editText.setText(stringBuffer);
+                editText.setSelection(1);
+                return;
+            }
+
         }
     }
 

@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static Context context;
     private static DateStringText dateStringText = new DateStringText();
+
     private static List<IncomeEntity> incomeEntities = new ArrayList<>();
     private BottomNavigationBar mBottomNavigationBar;
     private static FragmentManager sFragmentManager;
@@ -42,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
         CustomStatusBarBackground.customStatusBarTransparent(this);
         initView();
         MyDataBase.init(this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                incomeEntities = MyDataBase.getInstance().getIncomeDao().getAllIncome();
+            }
+        }).start();
         setEnterFragment();
         setView();
     }
@@ -141,9 +148,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static IncomeRecycleAdapter getIncomeRecycleAdapter() {
-        if (incomeRecycleAdapter == null){
-            incomeRecycleAdapter = new IncomeRecycleAdapter(MainActivity.getContext(),incomeEntities);
-        }
+        incomeRecycleAdapter = new IncomeRecycleAdapter(MainActivity.getContext(),incomeEntities);
         return incomeRecycleAdapter;
     }
 
@@ -163,5 +168,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static void setDateStringText(DateStringText dateStringText) {
         MainActivity.dateStringText = dateStringText;
+    }
+
+    public static List<IncomeEntity> getIncomeEntities() {
+        return incomeEntities;
+    }
+
+    public static void setIncomeEntities(List<IncomeEntity> incomeEntities) {
+        MainActivity.incomeEntities = incomeEntities;
     }
 }

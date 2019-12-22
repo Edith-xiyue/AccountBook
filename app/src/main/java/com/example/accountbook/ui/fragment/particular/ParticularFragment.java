@@ -29,7 +29,8 @@ public class ParticularFragment extends Fragment {
     private static final String TAG = "ParticularFragment";
 
     private View statusBar;
-    private List<IncomeEntity> incomeEntities = new ArrayList<>();
+
+    private List<IncomeEntity> incomeEntities = MainActivity.getIncomeEntities();
     private RecyclerView recyclerView;
     private TextView title;
 
@@ -47,12 +48,15 @@ public class ParticularFragment extends Fragment {
         title.setText(R.string.title_particular);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        MainActivity.setIncomeRecycleAdapter(new IncomeRecycleAdapter(getContext(),incomeEntities));
+        if (MainActivity.getIncomeRecycleAdapter() == null ){
+            MainActivity.setIncomeRecycleAdapter(new IncomeRecycleAdapter(getContext(),incomeEntities));
+        }
         recyclerView.setAdapter(MainActivity.getIncomeRecycleAdapter());
 
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 incomeEntities = MyDataBase.getInstance().getIncomeDao().getAllIncome();
                 Log.d(TAG, "run: incomeEntities.size() = " + incomeEntities.size());
                 getActivity().runOnUiThread(new Runnable() {
