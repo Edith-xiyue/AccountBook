@@ -17,11 +17,10 @@ import com.example.accountbook.database.table.IncomeEntity;
 
 @Database(entities = { IncomeEntity.class},version = 1,exportSchema = false)
 public abstract class MyDataBase extends RoomDatabase {
-    private static final String DB_NAME = "chat.db";
+    private static final String DB_NAME = "account_book.db";
     public MyDataBase(){}
     public static MyDataBase sInstance;
     public static void init(Context context){
-        Log.d("MyDatabase", "initData: ");
         sInstance = Room.databaseBuilder(context, MyDataBase.class,DB_NAME).build();
     }
 

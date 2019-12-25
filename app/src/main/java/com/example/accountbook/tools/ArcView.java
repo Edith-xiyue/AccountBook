@@ -30,7 +30,6 @@ public class ArcView extends View {
 
     private int maxNum;//扇形图的最大块数 超过的item就合并到其他
 
-    String others = "其他";//“其他”块要显示的文字
     double total;//数据的总和
     double[] datas;//数据集
     String[] texts;//每个数据对应的文字集
@@ -74,19 +73,16 @@ public class ArcView extends View {
         //获取宽高 不要设置wrap_content
         mHeight = MeasureSpec.getSize(heightMeasureSpec);
         mWidth = MeasureSpec.getSize(widthMeasureSpec);
-        Log.d(TAG, "onMeasure: mHeight = " + mHeight + "  mWidth = " + mWidth);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d(TAG, "onDraw: radius =" + radius);
         //无数据
         if (datas == null || datas.length == 0) return;
 
         centerX = (getRight() - getLeft()) / 2;
         centerY = (getBottom() - getTop()) / 2;
-        Log.d(TAG, "onDraw: centerX = " + centerX + ", centerY" + centerY);
 
         int min = mHeight > mWidth ? mWidth : mHeight;
         if (radius > min / 2) {
@@ -167,18 +163,13 @@ public class ArcView extends View {
     private void drawCircle(Canvas canvas) {
         RectF rect = new RectF((float) (centerX - radius), centerY - radius,
                 centerX + radius, centerY + radius);
-
-        Log.d(TAG, "drawCircle: -------------------------------------------------------------");
-        Log.d(TAG, "drawCircle: left = " + rect.left + ", right = " + rect.right + ", top = " + rect.top + ", bottom = " + rect.bottom);
         int start = 0;
         for (int i = 0; i < (maxNum < datas.length ? maxNum : datas.length); i++) {
             float angles = (float) ((datas[i] * 100 /100.f / total) * 360);
-            Log.d(TAG, "drawCircle: start = " + start + ", angles = " + angles + ", datas[i] = " + datas[i] + ", total = " + total);
-            mPaint.setColor(mColors[i % mColors.length]);
+           mPaint.setColor(mColors[i % mColors.length]);
             canvas.drawArc(rect, start, angles, true, mPaint);
             start += angles;
         }
-        Log.d(TAG, "drawCircle: ---------------------------------------------------------------");
     }
 
 
@@ -211,9 +202,7 @@ public class ArcView extends View {
         invalidate();
     }
 
-    public void setOthersText(String others) {
-        this.others = others;
-    }
+
 
     public abstract class ArcViewAdapter<T> {
 
@@ -221,16 +210,11 @@ public class ArcView extends View {
             datas = new double[list.size()];
             total = 0;
             texts = new String[list.size()];
-            Log.d(TAG, "setData: ---------------------------------------------------------------");
             for (int i = 0; i < list.size(); i++) {
-                Log.d(TAG, "setData: list.get(i) = " + getValue(list.get(i)));
                 total += getValue(list.get(i));
                 datas[i] = getValue(list.get(i));
-                Log.d(TAG, "setData: datas = " + datas[i] + " total = " + total);
                 texts[i] = getText(list.get(i));
             }
-            Log.d(TAG, "setData: total = " + total + ",size = " + list.size());
-            Log.d(TAG, "setData: ---------------------------------------------------------------");
         }
         //通过传来的数据集的某个元素  得到具体的数字
         public abstract double getValue(T t);

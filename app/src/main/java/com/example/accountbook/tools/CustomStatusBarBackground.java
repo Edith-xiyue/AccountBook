@@ -25,7 +25,6 @@ public class CustomStatusBarBackground {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
         }
-        Log.d("TransparencyView", "statusBarHeight: "+statusBarHeight);
         ViewGroup.LayoutParams customStatusBar = view.getLayoutParams();
         customStatusBar.height = statusBarHeight;
         view.setBackground(context.getResources().getDrawable(drawable));
@@ -38,7 +37,6 @@ public class CustomStatusBarBackground {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
         }
-        Log.d("TransparencyView", "statusBarHeight: "+statusBarHeight);
         ViewGroup.LayoutParams customStatusBar = view.getLayoutParams();
         customStatusBar.height = statusBarHeight;
         view.setBackground(context.getResources().getDrawable(color));

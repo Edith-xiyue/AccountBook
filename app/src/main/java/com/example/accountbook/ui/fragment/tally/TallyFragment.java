@@ -4,7 +4,6 @@ import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +26,6 @@ import com.example.accountbook.tools.CustomDialog;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.CustomTextWatcher;
 import com.example.accountbook.tools.ToastUtil;
-import com.example.accountbook.ui.fragment.classificationsummary.ClassificationSummary;
-import com.example.accountbook.ui.fragment.particular.ParticularFragment;
 import com.example.accountbook.ui.fragment.summarizing.SummarizingFragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,7 +33,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +41,7 @@ import butterknife.OnClick;
 public class TallyFragment extends Fragment {
 
     private static final String TAG = "TallyFragment";
+
     @BindView(R.id.custom_status_bar_background)
     View customStatusBarBackground;
     @BindView(R.id.money)
@@ -118,7 +115,6 @@ public class TallyFragment extends Fragment {
         }else {
             Time = System.currentTimeMillis();
             SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            Log.d(TAG, "initTime: Time = " + Time);
             dateStr = dateformat.format(Time);
             time.setText(dateStr);
         }
@@ -142,13 +138,13 @@ public class TallyFragment extends Fragment {
         switch (view.getId()){
             case R.id.tally_save:
                 if (TextUtils.isEmpty(remark.getText().toString()) && TextUtils.isEmpty(money.getText().toString())){
-                    ToastUtil.toast(getContext(),"请填写金额和备注。");
+                    ToastUtil.toast(getContext(),getString(R.string.no_remark_amount_toast_text));
                 }else if (TextUtils.isEmpty(remark.getText().toString())){
-                    ToastUtil.toast(getContext(),"请填写备注。");
+                    ToastUtil.toast(getContext(),getString(R.string.no_remark_toast_text));
                 }else if (TextUtils.isEmpty(money.getText().toString())){
-                    ToastUtil.toast(getContext(),"请填写金额。");
+                    ToastUtil.toast(getContext(),getString(R.string.no_amount_toast_text));
                 }else if (Double.parseDouble(money.getText().toString()) > 10000){
-                    ToastUtil.toast(getContext(),"最大金额为10000。");
+                    ToastUtil.toast(getContext(),getString(R.string.max_amount_toast_text));
                 } else {
                     showNormalMoreButtonDialog();
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -165,7 +161,6 @@ public class TallyFragment extends Fragment {
                 customDialog.setClickListener(new CustomDialog.ClickListenerInterface() {
                     @Override
                     public void doConfirm() {
-                        Log.d(TAG, "doConfirm: Picker 3" + MainActivity.getDateStringText().toString());
                         calendar.set(MainActivity.getDateStringText().getYear(),MainActivity.getDateStringText().getMonth(),MainActivity.getDateStringText().getDay(),MainActivity.getDateStringText().getHour(),MainActivity.getDateStringText().getMinute());
                         initCalendar =true;
                         initTime();
@@ -192,7 +187,6 @@ public class TallyFragment extends Fragment {
                 try {
                     incomeEntity = new IncomeEntity();
                     incomeEntity.setIncomeType(payment);
-                    Log.d(TAG, "onClick: IncomeType = " + incomeEntity.getIncomeType());
                     incomeEntity.setIncomeRemark(Remark);
                     incomeEntity.setIncomeMoney(Money);
                     incomeEntity.setIncomeTime(Time);

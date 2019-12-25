@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -57,7 +56,7 @@ public class CustomDialog extends Dialog {
     private boolean picker = false;
     private boolean next = true;
     private boolean cancel = true;
-    private boolean wrongTime = false;
+    private boolean errorTime = false;
     private boolean nowDay = true;
 
     public interface ClickListenerInterface {
@@ -222,8 +221,8 @@ public class CustomDialog extends Dialog {
         if (picker){
             dialogButtonConfirm.setOnClickListener(new clickListener());
             dialogButtonCancel.setOnClickListener(new clickListener());
-            dialogButtonCancel.setText("取消");
-            dialogButtonConfirm.setText("确定");
+            dialogButtonCancel.setText(context.getString(R.string.cancel_string));
+            dialogButtonConfirm.setText(context.getString(R.string.confirm_string));
             DateStringText dateStringText = new DateStringText(calendar.get(Calendar.YEAR), calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH),calendar.get(Calendar.MINUTE),calendar.get(Calendar.HOUR_OF_DAY));
             MainActivity.setDateStringText(dateStringText);
             presentYear = calendar.get(Calendar.YEAR);
@@ -232,21 +231,18 @@ public class CustomDialog extends Dialog {
             customDatePicker.init(presentYear, presentMonth, presentDay, new DatePicker.OnDateChangedListener() {
                 @Override
                 public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    Log.d(TAG, "onDateChanged: wrongTime 当前时间为：" + dateStringText.toString());
                     if (presentYear >= year && presentMonth >= monthOfYear && presentDay >= dayOfMonth){
                         if (presentYear == year && presentMonth == monthOfYear && presentDay == dayOfMonth){
                             nowDay = true;
                         }else {
                             nowDay = false;
                         }
-                        wrongTime = false;
-                        Log.d(TAG, "onDateChanged 年月日:  wrongTime =" + wrongTime);
+                        errorTime = false;
                         MainActivity.getDateStringText().setDay(dayOfMonth);
                         MainActivity.getDateStringText().setYear(year);
                         MainActivity.getDateStringText().setMonth(monthOfYear);
                     }else {
-                        wrongTime = true;
-                        Log.d(TAG, "onDateChanged 年月日:  wrongTime =" + wrongTime);
+                        errorTime = true;
                     }
                 }
 
@@ -255,21 +251,17 @@ public class CustomDialog extends Dialog {
                 @Override
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                     if (nowDay){
-                        Log.d(TAG, "onTimeChanged: wrongTime 现在时间" + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
                         if (calendar.get(Calendar.HOUR_OF_DAY) >= hourOfDay && calendar.get(Calendar.MINUTE) >= minute){
                             MainActivity.getDateStringText().setHour(hourOfDay);
                             MainActivity.getDateStringText().setMinute(minute);
-                            wrongTime = false;
-                            Log.d(TAG, "onDateChanged 时分:  wrongTime =" + wrongTime);
+                            errorTime = false;
                         }else {
-                            wrongTime = true;
-                            Log.d(TAG, "onDateChanged 时分:  wrongTime =" + wrongTime);
+                            errorTime = true;
                         }
                     }else {
                         MainActivity.getDateStringText().setHour(hourOfDay);
                         MainActivity.getDateStringText().setMinute(minute);
-                        wrongTime = false;
-                        Log.d(TAG, "onDateChanged 时分:  wrongTime =" + wrongTime);
+                        errorTime = false;
                     }
                 }
             });
@@ -281,7 +273,6 @@ public class CustomDialog extends Dialog {
     }
 
     public void setItemClickListener(ItemClickListenerInterface itemClickListenerInterface){
-        Log.d(TAG, "setItemClickListener: 注册点击事件2");
         this.itemClickListenerInterface = itemClickListenerInterface;
     }
 
@@ -292,13 +283,13 @@ public class CustomDialog extends Dialog {
             switch (id) {
                 case R.id.dialog_show_confirm_button:
                     if (picker){
-                        if (wrongTime){
-                            ToastUtil.toast(context,"请选择正确的时间！");
+                        if (errorTime){
+                            ToastUtil.toast(context,context.getString(R.string.select_error_time_toast_text));
                         }else {
                             if (next){
                                 customDatePicker.setVisibility(View.GONE);
                                 customTimePicker.setVisibility(View.VISIBLE);
-                                dialogButtonCancel.setText("返回");
+                                dialogButtonCancel.setText(context.getString(R.string.return_string));
                                 next = false;
                                 cancel = false;
                             }else {
@@ -315,7 +306,7 @@ public class CustomDialog extends Dialog {
                         if (!cancel) {
                             customDatePicker.setVisibility(View.VISIBLE);
                             customTimePicker.setVisibility(View.GONE);
-                            dialogButtonCancel.setText("取消");
+                            dialogButtonCancel.setText(context.getString(R.string.cancel_string));
                             next = true;
                             cancel = true;
                         } else {

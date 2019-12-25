@@ -3,12 +3,10 @@ package com.example.accountbook;
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.example.accountbook.adapter.IncomeRecycleAdapter;
-import com.example.accountbook.database.MyDataBase;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.DateStringText;
@@ -80,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position) {
-                //B: [PT-79] [Intranet Chat] [APP][UI] BottomNavigationBar 控件优化,Allen Luo,2019/11/13
                 FragmentTransaction sFragmentTransaction = sFragmentManager.beginTransaction();
                 hideFragment(sFragmentTransaction);
 
@@ -112,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
                 sFragmentTransaction.commit();
-                //E: [PT-79] [Intranet Chat] [APP][UI] BottomNavigationBar 控件优化,Allen Luo,2019/11/13
             }
 
             @Override
@@ -126,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    //B: [PT-79] [Intranet Chat] [APP][UI] BottomNavigationBar 控件优化,Allen Luo,2019/11/13
     public void setEnterFragment(){
         sFragmentManager = getSupportFragmentManager();
         FragmentTransaction sFragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -190,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initIncomeEntities() {
-        Log.d(TAG, "initIncomeEntities: size = " + incomeEntities.size());
         for (int i = 0;i < incomeEntities.size();i ++){
             SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy-MM-dd");
             String dateStr = yearFormat.format(incomeEntities.get(i).getIncomeTime());

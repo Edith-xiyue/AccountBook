@@ -18,7 +18,6 @@ public class ListFilter {
     public static List<IncomeEntity> listFilter(String charString) {
         filterEntities = new ArrayList<>();
         for (int i = 0; i < sourceEntities.size(); i++) {
-            Log.d(TAG, "listFilter: sourceEntities = " + sourceEntities.get(i).toString());
             if (sourceEntities.get(i).getDate().contains(charString)) {
                 filterEntities.add(sourceEntities.get(i));
             }

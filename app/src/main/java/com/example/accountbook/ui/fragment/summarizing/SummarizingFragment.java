@@ -68,9 +68,9 @@ public class SummarizingFragment extends Fragment {
     }
 
     public void initView(){
-        mTabTitles[0] = "年";
-        mTabTitles[1] = "月";
-        mTabTitles[2] = "日";
+        mTabTitles[0] = getString(R.string.year_text);
+        mTabTitles[1] = getString(R.string.month_text);
+        mTabTitles[2] = getString(R.string.day_text);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
         fragments.add(yearClassificationSummary);
         fragments.add(monthClassificationSummary);

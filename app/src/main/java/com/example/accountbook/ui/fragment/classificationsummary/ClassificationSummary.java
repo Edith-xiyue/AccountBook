@@ -87,7 +87,6 @@ public class ClassificationSummary extends Fragment {
         if (YEAR){
             if (filterYear == null) return;
             filterString = String.valueOf(filterYear.getText());
-            Log.d(TAG, "onClick: filterString = " + filterString);
             incomeEntities = ListFilter.listFilter(filterString);
             initData();
             initView();
@@ -96,7 +95,6 @@ public class ClassificationSummary extends Fragment {
         if (MONTH){
             if (filterYear == null) return;
             filterString = filterYear.getText() + "-" + filterMonth.getText();
-            Log.d(TAG, "onClick: filterString = " + filterString);
             incomeEntities = ListFilter.listFilter(filterString);
             initData();
             initView();
@@ -105,7 +103,6 @@ public class ClassificationSummary extends Fragment {
         if (DAY){
             if (filterYear == null) return;
             filterString = filterYear.getText() + "-" + filterMonth.getText() + "-" + filterDay.getText();
-            Log.d(TAG, "onClick: filterString = " + filterString);
             incomeEntities = ListFilter.listFilter(filterString);
             initData();
             initView();
@@ -129,9 +126,9 @@ public class ClassificationSummary extends Fragment {
         Proportion sProportion = new Proportion();
         Proportion zProportion = new Proportion();
         sProportion.money = sMoneySum;
-        sProportion.type = "总收入";
+        sProportion.type = getString(R.string.total_expenditure_string);
         zProportion.money = zMoneySum;
-        zProportion.type = "总支出";
+        zProportion.type = getString(R.string.general_income_string);
         List<Proportion> proportions = new ArrayList<>();
         proportions.add(zProportion);
         proportions.add(sProportion);
@@ -167,7 +164,6 @@ public class ClassificationSummary extends Fragment {
             filterMonth.setText(month);
             filterMonth.setVisibility(View.VISIBLE);
             textMonth.setVisibility(View.VISIBLE);
-            Log.d(TAG, "initincomeEntities: MONTH = " + MONTH);
             incomeEntities = ListFilter.listFilter(year + "-" + month);
         }
         if (DAY){
@@ -178,7 +174,6 @@ public class ClassificationSummary extends Fragment {
             filterDay.setVisibility(View.VISIBLE);
             textDay.setVisibility(View.VISIBLE);
             textMonth.setVisibility(View.VISIBLE);
-            Log.d(TAG, "initincomeEntities: DAY = " + DAY);
             incomeEntities = ListFilter.listFilter(year + "-" + month + "-" + day);
         }
     }

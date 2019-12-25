@@ -19,11 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.accountbook.MainActivity;
 import com.example.accountbook.R;
 import com.example.accountbook.database.MyDataBase;
-import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 
 import java.io.File;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -50,6 +48,7 @@ public class StartAnimationActivity extends AppCompatActivity {
         File voice = this.getExternalFilesDir("voice");
         File video = this.getExternalFilesDir("video");
         File receive = this.getExternalFilesDir("receive");
+
         MyDataBase.init(this);
         new Thread(new Runnable() {
             @Override

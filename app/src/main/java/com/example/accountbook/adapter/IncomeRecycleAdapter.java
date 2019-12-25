@@ -47,7 +47,6 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
     }
 
     public IncomeRecycleAdapter(Context context, List<IncomeEntity> incomeEntities){
-        Log.d(TAG, "MyRecycleAdapter: " + incomeEntities.size());
         this.mContext = context;
         this.sourceIncomeEntities = incomeEntities;
         this.filterIncomeEntities = incomeEntities;
@@ -64,7 +63,6 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
 
     @Override
     public void onBindViewHolder(@NonNull IncomeRecycleHolder holder, int position) {
-        Log.d(TAG, "onBindViewHolder: position = " + position);
         this.mPosition = position;
         holder.setsPosition(position);
     }
@@ -250,8 +248,6 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
                         }
                     }).start();
                     sourceIncomeEntities.remove(position);
-                    Log.d(TAG, "onLongPress: RecycleAdapter中的List：" + sourceIncomeEntities.size());
-                    Log.d(TAG, "onLongPress: 删除的Item为:" + position);
                     notifyItemRemoved(position);
                     notifyDataSetChanged();
                     ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text));
