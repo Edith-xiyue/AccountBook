@@ -1,7 +1,9 @@
 package com.example.accountbook;
 
 import android.content.Context;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
@@ -10,6 +12,7 @@ import com.example.accountbook.database.MyDataBase;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.DateStringText;
+import com.example.accountbook.tools.ToastUtil;
 import com.example.accountbook.ui.fragment.particular.ParticularFragment;
 import com.example.accountbook.ui.fragment.tally.TallyFragment;
 import com.example.accountbook.ui.fragment.summarizing.SummarizingFragment;
@@ -24,14 +27,15 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     private static Context context;
     private static DateStringText dateStringText = new DateStringText();
-
     private static List<IncomeEntity> incomeEntities = new ArrayList<>();
     private BottomNavigationBar mBottomNavigationBar;
     private static FragmentManager sFragmentManager;
     private TallyFragment tallyFragment;
-    private ParticularFragment particularFragment;
+    private static ParticularFragment particularFragment;
     private SummarizingFragment summarizingFragment;
     private static IncomeRecycleAdapter incomeRecycleAdapter;
 
@@ -41,20 +45,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         context = MainActivity.this;
         CustomStatusBarBackground.customStatusBarTransparent(this);
+        initIncomeEntities();
         initView();
-        MyDataBase.init(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                incomeEntities = MyDataBase.getInstance().getIncomeDao().getAllIncome();
-            }
-        }).start();
         setEnterFragment();
         setView();
     }
+
     private void initView() {
         mBottomNavigationBar = (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar_main);
     }
+
     private void setView() {
         mBottomNavigationBar
                 .setMode(BottomNavigationBar. MODE_FIXED)
@@ -131,24 +131,34 @@ public class MainActivity extends AppCompatActivity {
         sFragmentManager = getSupportFragmentManager();
         FragmentTransaction sFragmentTransaction = getSupportFragmentManager().beginTransaction();
         tallyFragment = new TallyFragment();
+        summarizingFragment = new SummarizingFragment();
+        particularFragment = new ParticularFragment();
+        sFragmentTransaction.add(R.id.frameContent, particularFragment);
+        sFragmentTransaction.add(R.id.frameContent, summarizingFragment);
         sFragmentTransaction.add(R.id.frameContent, tallyFragment);
+        sFragmentTransaction.show(tallyFragment);
         sFragmentTransaction.commit();
     }
 
-    private void hideFragment(FragmentTransaction transaction){
-        if (tallyFragment != null){
+    private void hideFragment(FragmentTransaction transaction) {
+        if (tallyFragment != null) {
             transaction.hide(tallyFragment);
         }
-        if (particularFragment != null){
+        if (particularFragment != null) {
             transaction.hide(particularFragment);
         }
-        if (summarizingFragment != null){
+        if (summarizingFragment != null) {
             transaction.hide(summarizingFragment);
         }
     }
 
+    public static ParticularFragment getParticularFragment() {
+        return particularFragment;
+    }
+
     public static IncomeRecycleAdapter getIncomeRecycleAdapter() {
-        incomeRecycleAdapter = new IncomeRecycleAdapter(MainActivity.getContext(),incomeEntities);
+        if (incomeRecycleAdapter == null)
+            incomeRecycleAdapter = new IncomeRecycleAdapter(MainActivity.getContext(),incomeEntities);
         return incomeRecycleAdapter;
     }
 
@@ -174,7 +184,39 @@ public class MainActivity extends AppCompatActivity {
         return incomeEntities;
     }
 
+
     public static void setIncomeEntities(List<IncomeEntity> incomeEntities) {
         MainActivity.incomeEntities = incomeEntities;
+    }
+
+    public void initIncomeEntities() {
+        Log.d(TAG, "initIncomeEntities: size = " + incomeEntities.size());
+        for (int i = 0;i < incomeEntities.size();i ++){
+            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String dateStr = yearFormat.format(incomeEntities.get(i).getIncomeTime());
+            incomeEntities.get(i).setDate(dateStr);
+        }
+    }
+
+    private long time;
+    private boolean quit = false;
+
+    @Override
+    public void onBackPressed() {
+        if (quit == false){
+            time = System.currentTimeMillis();
+            quit = true;
+            ToastUtil.timingToast(MainActivity.this,getString(R.string.quitApp_toast_text),1000);
+            return;
+        }
+        if (System.currentTimeMillis() - time <= 1000){
+            super.onBackPressed();
+            ToastUtil.cancelToast(MainActivity.this);
+            int pid = android.os.Process.myPid();
+            android.os.Process.killProcess(pid);
+        }else{
+            time = System.currentTimeMillis();
+            ToastUtil.timingToast(MainActivity.this,getString(R.string.quitApp_toast_text),1000);
+        }
     }
 }

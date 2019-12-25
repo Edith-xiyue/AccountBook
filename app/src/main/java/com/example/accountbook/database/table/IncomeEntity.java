@@ -7,6 +7,7 @@ package com.example.accountbook.database.table;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "income_info")
@@ -22,6 +23,16 @@ public class IncomeEntity {
     private long incomeTime;
     @ColumnInfo(name = "income_remark")
     private String incomeRemark;
+    @Ignore
+    private String date;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public Integer getIncomeType() {
         return incomeType;
@@ -71,6 +82,7 @@ public class IncomeEntity {
                 ", incomeMoney='" + incomeMoney + '\'' +
                 ", incomeTime='" + incomeTime + '\'' +
                 ", incomeRemark='" + incomeRemark + '\'' +
+                ", date='" + date + '\'' +
                 '}';
     }
 }

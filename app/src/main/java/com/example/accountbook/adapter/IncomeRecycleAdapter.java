@@ -1,42 +1,56 @@
 package com.example.accountbook.adapter;
 
-import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.accountbook.MainActivity;
 import com.example.accountbook.R;
 import com.example.accountbook.database.MyDataBase;
 import com.example.accountbook.database.dao.IncomeDao;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomDialog;
 import com.example.accountbook.tools.ToastUtil;
+import com.example.accountbook.tools.WarningView;
+import com.example.accountbook.ui.fragment.particular.ParticularFragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
-public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdapter.IncomeRecycleHolder> {
+public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdapter.IncomeRecycleHolder> implements Filterable {
 
     private static String TAG = "MyRecycleAdapter";
 
     private Context mContext;
     private int mPosition;
-    private List<IncomeEntity> incomeEntities;
+    private TextView textView;
+    private boolean noIncome = false;
+    private List<IncomeEntity> sourceIncomeEntities = new ArrayList<>();
+    private static List<IncomeEntity> filterIncomeEntities = new ArrayList<>();
+
+    public static List<IncomeEntity> getFilterIncomeEntities() {
+        return filterIncomeEntities;
+    }
 
     public IncomeRecycleAdapter(Context context, List<IncomeEntity> incomeEntities){
         Log.d(TAG, "MyRecycleAdapter: " + incomeEntities.size());
         this.mContext = context;
-        this.incomeEntities = incomeEntities;
+        this.sourceIncomeEntities = incomeEntities;
+        this.filterIncomeEntities = incomeEntities;
     }
 
     @NonNull
@@ -44,6 +58,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
     public IncomeRecycleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View inflate = LayoutInflater.from(mContext).inflate(R.layout.recycle_particular, parent, false);
         IncomeRecycleHolder incomeRecycleHolder = new IncomeRecycleHolder(inflate,mContext);
+        textView = inflate.findViewById(R.id.particular_recycler_time);
         return incomeRecycleHolder;
     }
 
@@ -56,7 +71,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
 
     @Override
     public int getItemCount() {
-        return null == incomeEntities ? 0 : incomeEntities.size();
+        return null == filterIncomeEntities ? 0 : filterIncomeEntities.size();
     }
 
     @Override
@@ -65,17 +80,48 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
     }
 
     public void addItem(IncomeEntity device){
-        incomeEntities.add(device);
-        for (int i =0 ;i < incomeEntities.size();i++)
-            Log.d(TAG, "add: mDeviceList.name: "+ (i+1) +"="+incomeEntities.get(i).getId());
-        this.notifyItemInserted(incomeEntities.size() - 1);
+        sourceIncomeEntities.add(device);
+        this.notifyItemInserted(sourceIncomeEntities.size() - 1);
     }
 
-    public void addAllItem(List<IncomeEntity> incomeEntities){
-        Log.d(TAG, "addAllItem: sizi = " + incomeEntities.size());
-        int start = incomeEntities.size();
-        this.incomeEntities.addAll(incomeEntities);
-        notifyItemRangeInserted(start,incomeEntities.size());
+    @Override
+    public Filter getFilter(){
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults filterResults = new FilterResults();
+                String charString = constraint.toString();
+                if (charString.isEmpty()) {
+                    filterIncomeEntities = sourceIncomeEntities;
+                    //没有过滤的内容，则使用源数据
+                } else {
+                    List<IncomeEntity> filteredList = new ArrayList<>();
+                    for (int i = 0;i < sourceIncomeEntities.size(); i ++){
+                        if (sourceIncomeEntities.get(i).getDate().contains(charString)){
+                            filteredList.add(sourceIncomeEntities.get(i));
+                        }
+                    }
+                    filterIncomeEntities = filteredList;
+                }
+                if (filterIncomeEntities.size() == 0){
+                    WarningView warningView = new WarningView();
+                    warningView.setWarningViewShow(true);
+                    EventBus.getDefault().post(warningView);
+                }else {
+                    WarningView warningView = new WarningView();
+                    warningView.setWarningViewShow(false);
+                    EventBus.getDefault().post(warningView);
+                }
+                filterResults.values = filterIncomeEntities;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filterIncomeEntities = (ArrayList<IncomeEntity>) results.values;
+                notifyDataSetChanged();
+            }
+        };
     }
 
     class IncomeRecycleHolder extends RecyclerView.ViewHolder implements GestureDetector.OnGestureListener{
@@ -87,7 +133,6 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
         private GestureDetector sGestureDetector;
         private Context sContext;
 
-        private boolean delete;
         private String dateStr;
         private int sPosition;
 
@@ -98,11 +143,11 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
 
         private void initData() {
             sGestureDetector = new GestureDetector(sContext,this);
-            remark.setText(incomeEntities.get(sPosition).getIncomeRemark());
-            SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
-            dateStr = dateformat.format(incomeEntities.get(sPosition).getIncomeTime());
+            remark.setText(filterIncomeEntities.get(sPosition).getIncomeRemark());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            dateStr = dateFormat.format(filterIncomeEntities.get(sPosition).getIncomeTime());
             time.setText(dateStr);
-            money.setText(String.valueOf(incomeEntities.get(sPosition).getIncomeMoney()));
+            money.setText(String.valueOf(filterIncomeEntities.get(sPosition).getIncomeMoney()));
         }
 
 
@@ -111,7 +156,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
             time = itemView.findViewById(R.id.recycle_particular_time);
             money = itemView.findViewById(R.id.recycle_particular_money);
             recycleItem = itemView.findViewById(R.id.recycler_particular_item);
-            if (incomeEntities.get(sPosition).getIncomeType() == 0)
+            if (filterIncomeEntities.get(sPosition).getIncomeType() == 0)
                 recycleItem.setBackgroundResource(R.drawable.circular_bead_red);
             else
                 recycleItem.setBackgroundResource(R.drawable.circular_bead_green);
@@ -139,7 +184,6 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
 
         @Override
         public boolean onDown(MotionEvent e) {
-            delete = false;
             return true;
         }
 
@@ -162,18 +206,15 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
         @Override
         public void onLongPress(MotionEvent e) {
             CustomDialog customDialog = new CustomDialog(sContext, sContext.getString(R.string.incomeRecycleAdapter_dialog_text_show_particular), sContext.getString(R.string.incomeRecycleAdapter_dialog_text_delete_item));
-            Log.d(TAG, "onLongPress: 注册点击事件。");
             customDialog.setItemClickListener(new CustomDialog.ItemClickListenerInterface() {
                 @Override
                 public void showParticular() {
-                    Log.d(TAG, "showParticular: 点击事件？");
                     showDetailDialog(sContext,sPosition);
                     customDialog.dismiss();
                 }
 
                 @Override
                 public void deleteItem() {
-                    Log.d(TAG, "showParticular: 点击事件？");
                     deleteItemDialog(sContext,sPosition);
                     customDialog.dismiss();
                 }
@@ -188,7 +229,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
     }
 
     public void showDetailDialog(Context context, int position){
-        CustomDialog customDialog = new CustomDialog(context,incomeEntities.get(position));
+        CustomDialog customDialog = new CustomDialog(context, sourceIncomeEntities.get(position));
         customDialog.show();
     }
 
@@ -199,7 +240,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
             @Override
             public void doConfirm() {
                 try{
-                    IncomeEntity entity = incomeEntities.get(position);
+                    IncomeEntity entity = sourceIncomeEntities.get(position);
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -208,8 +249,11 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
                             incomeDao.delete(entity1);
                         }
                     }).start();
-                    incomeEntities.remove(position);
-                    MainActivity.getIncomeRecycleAdapter().notifyItemInserted(incomeEntities.size() - 1);;
+                    sourceIncomeEntities.remove(position);
+                    Log.d(TAG, "onLongPress: RecycleAdapter中的List：" + sourceIncomeEntities.size());
+                    Log.d(TAG, "onLongPress: 删除的Item为:" + position);
+                    notifyItemRemoved(position);
+                    notifyDataSetChanged();
                     ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text));
 
                 } catch (Exception e) {

@@ -10,12 +10,13 @@
         android:id="@+id/title_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="@dimen/dp_10"
         android:textSize="@dimen/sp_24"
         android:background="@drawable/custom_gradient_main_title"
         android:textColor="@android:color/white"
         android:gravity="center"/>
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_5"
+        android:layout_height="@dimen/dp_15"
         android:background="@drawable/custom_gradient_main_title"/>
 </LinearLayout>

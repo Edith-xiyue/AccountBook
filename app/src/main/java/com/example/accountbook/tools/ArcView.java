@@ -7,11 +7,16 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.List;
 
 public class ArcView extends View {
+
+    private static final String TAG = "ArcView";
 
     private int mHeight, mWidth;//宽高
     private Paint mPaint;//扇形的画笔
@@ -31,10 +36,7 @@ public class ArcView extends View {
     String[] texts;//每个数据对应的文字集
 
     //颜色 默认的颜色
-    private int[] mColors = {
-            Color.parseColor("#FF4081"), Color.parseColor("#ffc0cb"),
-            Color.parseColor("#00ff00"), Color.parseColor("#0066ff"), Color.parseColor("#ffee00")
-    };
+    private int[] mColors = new int[2];
 
     private int mTextSize;//文字大小
 
@@ -72,16 +74,20 @@ public class ArcView extends View {
         //获取宽高 不要设置wrap_content
         mHeight = MeasureSpec.getSize(heightMeasureSpec);
         mWidth = MeasureSpec.getSize(widthMeasureSpec);
+        Log.d(TAG, "onMeasure: mHeight = " + mHeight + "  mWidth = " + mWidth);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        Log.d(TAG, "onDraw: radius =" + radius);
         //无数据
         if (datas == null || datas.length == 0) return;
 
         centerX = (getRight() - getLeft()) / 2;
         centerY = (getBottom() - getTop()) / 2;
+        Log.d(TAG, "onDraw: centerX = " + centerX + ", centerY" + centerY);
+
         int min = mHeight > mWidth ? mWidth : mHeight;
         if (radius > min / 2) {
             radius = (int) ((min - getPaddingTop() - getPaddingBottom()) / 3.5);
@@ -109,16 +115,12 @@ public class ArcView extends View {
         for (int i = 0; i < (maxNum < datas.length ? maxNum : datas.length); i++) {
 
             float angles = (float) ((datas[i] * 1.0f / total) * 360);
-            drawLine(canvas, start, angles, texts[i], mColors[i % mColors.length]);
+            drawLine(canvas, start, angles, texts[i], mColors[i % mColors.length],datas[i]);
             start += angles;
         }
-        //画其他
-        if (start < 359)
-            drawLine(canvas, start, 360 - start, others, Color.GRAY);
-
     }
 
-    private void drawLine(Canvas canvas, int start, float angles, String text, int color) {
+    private void drawLine(Canvas canvas, int start, float angles, String text, int color,double datas) {
         mPaint.setColor(color);
         float stopX, stopY;
         stopX = (float) ((radius + 40) * Math.cos((2 * start + angles) / 2 * Math.PI / 180));
@@ -152,8 +154,8 @@ public class ArcView extends View {
         canvas.drawText(text, 0, text.length(), dx > 0 ? stopX + offset : stopX - w - offset, stopY + h, mTextPaint);
 
         //测量百分比大小
-        String percentage = angles / 3.60 + "";
-        percentage = percentage.substring(0, percentage.length() > 4 ? 4 : percentage.length()) + "%";
+        String percentage = Math.round((angles / 3.60)*100)/100.f + "";
+        percentage =datas + "—" + percentage.substring(0, percentage.length() > 5 ? 5 : percentage.length()) + "%";
         mTextPaint.getTextBounds(percentage, 0, percentage.length(), rect);
         w = rect.width() - 10;
         //画百分比
@@ -166,22 +168,17 @@ public class ArcView extends View {
         RectF rect = new RectF((float) (centerX - radius), centerY - radius,
                 centerX + radius, centerY + radius);
 
+        Log.d(TAG, "drawCircle: -------------------------------------------------------------");
+        Log.d(TAG, "drawCircle: left = " + rect.left + ", right = " + rect.right + ", top = " + rect.top + ", bottom = " + rect.bottom);
         int start = 0;
         for (int i = 0; i < (maxNum < datas.length ? maxNum : datas.length); i++) {
-            float angles = (float) ((datas[i] * 1.0f / total) * 360);
+            float angles = (float) ((datas[i] * 100 /100.f / total) * 360);
+            Log.d(TAG, "drawCircle: start = " + start + ", angles = " + angles + ", datas[i] = " + datas[i] + ", total = " + total);
             mPaint.setColor(mColors[i % mColors.length]);
             canvas.drawArc(rect, start, angles, true, mPaint);
             start += angles;
         }
-        //画"其他"
-        rest = 0;
-        for (int i = maxNum; i < datas.length; i++) {
-            rest += datas[i];
-        }
-        float angles = (float) 360 - start;
-        mPaint.setColor(Color.GRAY);
-        canvas.drawArc(rect, start, angles, true, mPaint);
-
+        Log.d(TAG, "drawCircle: ---------------------------------------------------------------");
     }
 
 
@@ -222,15 +219,19 @@ public class ArcView extends View {
 
         public void setData(List<T> list) {
             datas = new double[list.size()];
+            total = 0;
             texts = new String[list.size()];
+            Log.d(TAG, "setData: ---------------------------------------------------------------");
             for (int i = 0; i < list.size(); i++) {
+                Log.d(TAG, "setData: list.get(i) = " + getValue(list.get(i)));
                 total += getValue(list.get(i));
                 datas[i] = getValue(list.get(i));
+                Log.d(TAG, "setData: datas = " + datas[i] + " total = " + total);
                 texts[i] = getText(list.get(i));
             }
-
+            Log.d(TAG, "setData: total = " + total + ",size = " + list.size());
+            Log.d(TAG, "setData: ---------------------------------------------------------------");
         }
-
         //通过传来的数据集的某个元素  得到具体的数字
         public abstract double getValue(T t);
 
@@ -239,4 +240,3 @@ public class ArcView extends View {
     }
 
 }
-

@@ -5,6 +5,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 
+import com.example.accountbook.R;
+
 public class CustomTextWatcher implements TextWatcher {
     private EditText editText;
     private Context context;
@@ -35,7 +37,7 @@ public class CustomTextWatcher implements TextWatcher {
                         s.toString().indexOf(".") + digits+1);
                 editText.setText(s);
                 editText.setSelection(s.length()); //光标移到最后
-                ToastUtil.toast(context,"最多输入两位小数");
+                ToastUtil.toast(context,context.getString(R.string.two_decimal_places_warning));
             }
         }
         //如果"."在起始位置,则起始位置自动补0

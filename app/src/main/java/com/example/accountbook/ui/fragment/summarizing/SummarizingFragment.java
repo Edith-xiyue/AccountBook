@@ -1,7 +1,6 @@
 package com.example.accountbook.ui.fragment.summarizing;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.accountbook.R;
@@ -31,6 +28,10 @@ public class SummarizingFragment extends Fragment {
     private ViewPager viewPager;
     private LinearLayout titleLayout;
     private TextView titleText;
+    private FragmentStatePagerAdapter pagerAdapter;
+    private static ClassificationSummary yearClassificationSummary = new ClassificationSummary("year");
+    private static ClassificationSummary monthClassificationSummary = new ClassificationSummary("month");
+    private static ClassificationSummary dayClassificationSummary = new ClassificationSummary("day");
 
     private View statusBar;
     private List<Fragment> fragments = new ArrayList<>();
@@ -48,15 +49,33 @@ public class SummarizingFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        pagerAdapter.notifyDataSetChanged();
+    }
+
+    public static ClassificationSummary getYearClassificationSummary() {
+        return yearClassificationSummary;
+    }
+
+    public static ClassificationSummary getMonthClassificationSummary() {
+        return monthClassificationSummary;
+    }
+
+    public static ClassificationSummary getDayClassificationSummary() {
+        return dayClassificationSummary;
+    }
+
     public void initView(){
         mTabTitles[0] = "年";
         mTabTitles[1] = "月";
         mTabTitles[2] = "日";
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        fragments.add(new ClassificationSummary());
-        fragments.add(new ClassificationSummary());
-        fragments.add(new ClassificationSummary());
-        PagerAdapter pagerAdapter = new SummarizingPagerAdapter(getFragmentManager(),fragments,mTabTitles);
+        fragments.add(yearClassificationSummary);
+        fragments.add(monthClassificationSummary);
+        fragments.add(dayClassificationSummary);
+        pagerAdapter = new SummarizingPagerAdapter(getChildFragmentManager(),fragments,mTabTitles);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
         CustomStatusBarBackground.drawableViewStatusBar(getContext(),R.drawable.custom_gradient_main_title,statusBar);

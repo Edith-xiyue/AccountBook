@@ -27,6 +27,9 @@ import com.example.accountbook.tools.CustomDialog;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.CustomTextWatcher;
 import com.example.accountbook.tools.ToastUtil;
+import com.example.accountbook.ui.fragment.classificationsummary.ClassificationSummary;
+import com.example.accountbook.ui.fragment.particular.ParticularFragment;
+import com.example.accountbook.ui.fragment.summarizing.SummarizingFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -193,18 +196,21 @@ public class TallyFragment extends Fragment {
                     incomeEntity.setIncomeRemark(Remark);
                     incomeEntity.setIncomeMoney(Money);
                     incomeEntity.setIncomeTime(Time);
+                    incomeEntity.setDate(dateStr);
                     remark.setText("");
                     money.setText("");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             MyDataBase.getInstance().getIncomeDao().insert(incomeEntity);
-                            List<IncomeEntity> sIncomeEntity = MyDataBase.getInstance().getIncomeDao().getAllIncome();
-                            Log.d(TAG, "run: " + sIncomeEntity.toString());
                         }
                     }).start();
                     MainActivity.getIncomeRecycleAdapter().addItem(incomeEntity);
+                    SummarizingFragment.getYearClassificationSummary().updateView();
+                    SummarizingFragment.getMonthClassificationSummary().updateView();
+                    SummarizingFragment.getDayClassificationSummary().updateView();
                     ToastUtil.toast(getActivity(), getString(R.string.tallyFragment_dialog_btn_confirm_succeed_hint_text));
+                    initTime();
                     customDialog.dismiss();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -221,12 +227,5 @@ public class TallyFragment extends Fragment {
                 customDialog.dismiss();
             }
         });
-    }
-    public long getTime() {
-        return Time;
-    }
-
-    public void setTime(long time) {
-        Time = time;
     }
 }

@@ -42,6 +42,9 @@ public class CustomDialog extends Dialog {
     private IncomeEntity entity;
     private Calendar calendar;
 
+    private int presentYear;
+    private int presentMonth;
+    private int presentDay;
     private String dateStr;
     private String title;
     private String confirmButtonText;
@@ -138,7 +141,7 @@ public class CustomDialog extends Dialog {
             WindowManager.LayoutParams lp = dialogWindow.getAttributes();
             DisplayMetrics d = context.getResources().getDisplayMetrics();// 获取屏幕宽、高用
             lp.width = (int) (d.widthPixels * 0.6);// 高度设置为屏幕的0.6
-            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white);
+            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white_no_frame);
             dialogWindow.setAttributes(lp);
         }
 
@@ -158,7 +161,7 @@ public class CustomDialog extends Dialog {
             DisplayMetrics d = context.getResources().getDisplayMetrics();// 获取屏幕宽、高用
             lp.width = (int) (d.widthPixels * 0.8); // 高度设置为屏幕的0.6
             lp.height = (int) (d.heightPixels * 0.3);
-            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white);
+            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white_no_frame);
             dialogWindow.setAttributes(lp);
         }
 
@@ -171,7 +174,7 @@ public class CustomDialog extends Dialog {
             WindowManager.LayoutParams lp = dialogWindow.getAttributes();
             DisplayMetrics d = context.getResources().getDisplayMetrics();// 获取屏幕宽、高用
             lp.width = (int) (d.widthPixels * 0.5); // 高度设置为屏幕的0
-            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white);
+            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white_no_frame);
             dialogWindow.setAttributes(lp);
         }
 
@@ -184,7 +187,7 @@ public class CustomDialog extends Dialog {
             WindowManager.LayoutParams lp = dialogWindow.getAttributes();
             DisplayMetrics d = context.getResources().getDisplayMetrics();// 获取屏幕宽、高用
             lp.width = (int) (d.widthPixels * 0.8); // 高度设置为屏幕的0
-            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white);
+            dialogWindow.setBackgroundDrawableResource(R.drawable.circular_bead_white_no_frame);
             dialogWindow.setAttributes(lp);
         }
     }
@@ -223,12 +226,15 @@ public class CustomDialog extends Dialog {
             dialogButtonConfirm.setText("确定");
             DateStringText dateStringText = new DateStringText(calendar.get(Calendar.YEAR), calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH),calendar.get(Calendar.MINUTE),calendar.get(Calendar.HOUR_OF_DAY));
             MainActivity.setDateStringText(dateStringText);
-            customDatePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+            presentYear = calendar.get(Calendar.YEAR);
+            presentMonth = calendar.get(Calendar.MONTH);
+            presentDay = calendar.get(Calendar.DAY_OF_MONTH);
+            customDatePicker.init(presentYear, presentMonth, presentDay, new DatePicker.OnDateChangedListener() {
                 @Override
                 public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                     Log.d(TAG, "onDateChanged: wrongTime 当前时间为：" + dateStringText.toString());
-                    if (dateStringText.getYear() >= year && dateStringText.getMonth() >= monthOfYear && dateStringText.getDay() >= dayOfMonth){
-                        if (dateStringText.getYear() == year && dateStringText.getMonth() == monthOfYear && dateStringText.getDay() == dayOfMonth){
+                    if (presentYear >= year && presentMonth >= monthOfYear && presentDay >= dayOfMonth){
+                        if (presentYear == year && presentMonth == monthOfYear && presentDay == dayOfMonth){
                             nowDay = true;
                         }else {
                             nowDay = false;
@@ -282,8 +288,6 @@ public class CustomDialog extends Dialog {
     private class clickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            // TODO Auto-generated method stub
-            Log.d(TAG, "onClick: 注册点击事件5.......");
             int id = v.getId();
             switch (id) {
                 case R.id.dialog_show_confirm_button:
@@ -307,18 +311,15 @@ public class CustomDialog extends Dialog {
                     break;
                 case R.id.dialog_show_cancel_button:
                     if (picker){
-                        if (wrongTime) {
-                            ToastUtil.toast(context,"请选择正确的时间！");
-                        }else{
-                            if (!cancel) {
-                                customDatePicker.setVisibility(View.VISIBLE);
-                                customTimePicker.setVisibility(View.GONE);
-                                dialogButtonCancel.setText("取消");
-                                next = true;
-                                cancel = true;
-                            } else {
-                                clickListenerInterface.doCancel();
-                            }
+
+                        if (!cancel) {
+                            customDatePicker.setVisibility(View.VISIBLE);
+                            customTimePicker.setVisibility(View.GONE);
+                            dialogButtonCancel.setText("取消");
+                            next = true;
+                            cancel = true;
+                        } else {
+                            clickListenerInterface.doCancel();
                         }
                     }else {
                         clickListenerInterface.doCancel();
