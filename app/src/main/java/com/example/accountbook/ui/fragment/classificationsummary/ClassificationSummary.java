@@ -126,9 +126,9 @@ public class ClassificationSummary extends Fragment {
         Proportion sProportion = new Proportion();
         Proportion zProportion = new Proportion();
         sProportion.money = sMoneySum;
-        sProportion.type = getString(R.string.total_expenditure_string);
+        sProportion.type = getString(R.string.general_income_string);
         zProportion.money = zMoneySum;
-        zProportion.type = getString(R.string.general_income_string);
+        zProportion.type = getString(R.string.total_expenditure_string);
         List<Proportion> proportions = new ArrayList<>();
         proportions.add(zProportion);
         proportions.add(sProportion);
