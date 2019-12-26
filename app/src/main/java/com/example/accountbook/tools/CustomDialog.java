@@ -33,11 +33,13 @@ public class CustomDialog extends Dialog {
     private TextView dialogShowRemark;
     private TextView dialogShowParticular;
     private TextView dialogDeleteItem;
+    private TextView dialogAlterItem;
     private TimePicker customTimePicker;
     private DatePicker customDatePicker;
     private Button dialogButtonConfirm;
     private Button dialogButtonCancel;
     private View itemLine;
+    private View itemLine01;
     private IncomeEntity entity;
     private Calendar calendar;
 
@@ -50,6 +52,7 @@ public class CustomDialog extends Dialog {
     private String cancelButtonText;
     private String showParticularText;
     private String deleteItemText;
+    private String alterItemText;
     private boolean selectBox = false;
     private boolean displayBox = false;
     private boolean selectItemBox =false;
@@ -71,6 +74,8 @@ public class CustomDialog extends Dialog {
         public void showParticular();
 
         public void deleteItem();
+
+        public void alterItem();
     }
 
     public CustomDialog(Context context, IncomeEntity entity){
@@ -87,11 +92,12 @@ public class CustomDialog extends Dialog {
         picker = true;
     }
 
-    public CustomDialog(Context context, String fistItem,String secondItem) {
+    public CustomDialog(Context context, String[] strings) {
         super(context);
         this.context = context;
-        this.deleteItemText = secondItem;
-        this.showParticularText = fistItem;
+        this.alterItemText = strings[2];
+        this.deleteItemText = strings[1];
+        this.showParticularText = strings[0];
         selectItemBox = true;
     }
 
@@ -127,7 +133,9 @@ public class CustomDialog extends Dialog {
         dialogButtonCancel = (Button) view.findViewById(R.id.dialog_show_cancel_button);
         dialogShowParticular = (TextView) view.findViewById(R.id.dialog_show_particular);
         dialogDeleteItem = (TextView) view.findViewById(R.id.dialog_delete_item);
+        dialogAlterItem = (TextView) view.findViewById(R.id.dialog_alter_item);
         itemLine = (View) view.findViewById(R.id.item_line);
+        itemLine01 = (View) view.findViewById(R.id.item_line01);
 
         if (selectBox){
             dialogShowText.setTextSize(24);
@@ -167,7 +175,9 @@ public class CustomDialog extends Dialog {
         if (selectItemBox){
             dialogShowParticular.setVisibility(View.VISIBLE);
             dialogDeleteItem.setVisibility(View.VISIBLE);
+            dialogAlterItem.setVisibility(View.VISIBLE);
             itemLine.setVisibility(View.VISIBLE);
+            itemLine01.setVisibility(View.VISIBLE);
 
             Window dialogWindow = getWindow();
             WindowManager.LayoutParams lp = dialogWindow.getAttributes();
@@ -213,9 +223,11 @@ public class CustomDialog extends Dialog {
         if (selectItemBox){
             dialogShowParticular.setText(showParticularText);
             dialogDeleteItem.setText(deleteItemText);
+            dialogAlterItem.setText(alterItemText);
 
             dialogShowParticular.setOnClickListener(new clickListener());
             dialogDeleteItem.setOnClickListener(new clickListener());
+            dialogAlterItem.setOnClickListener(new clickListener());
         }
 
         if (picker){
@@ -322,6 +334,8 @@ public class CustomDialog extends Dialog {
                 case R.id.dialog_delete_item:
                     itemClickListenerInterface.deleteItem();
                     break;
+                case R.id.dialog_alter_item:
+                    itemClickListenerInterface.alterItem();
             }
         }
     };

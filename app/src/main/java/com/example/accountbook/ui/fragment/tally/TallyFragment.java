@@ -4,6 +4,7 @@ import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -50,9 +52,13 @@ public class TallyFragment extends Fragment {
     TextView time;
     @BindView(R.id.remark)
     EditText remark;
-    @BindView(R.id.tally_save)
-    Button tallySave;
+    @BindView(R.id.tally_confirm)
+    Button tallyConfirm;
+    @BindView(R.id.tally_cancel_layout)
+    LinearLayout tallyCancelLayout;
 
+    private boolean alter = false;
+    private boolean noAlter = false;
     private long Time;
     private int payment = 0;
     private boolean initCalendar = false;
@@ -65,7 +71,8 @@ public class TallyFragment extends Fragment {
     private View statusBar;
     private Spinner sSpinner;
     private Calendar calendar = Calendar.getInstance();
-    private IncomeEntity incomeEntity;
+    private IncomeEntity newIncomeEntity = null;
+    private IncomeEntity oldIncomeEntity = null;
     private ArrayAdapter<String> sSpinnerAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -127,16 +134,31 @@ public class TallyFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void typeStorage(IncomeEntity eventMessage){
-
+    public void alterParticular(IncomeEntity incomeEntity){
+        Log.d(TAG, "alterIncomeEntities 3: " + incomeEntity.toString());
+        switch (incomeEntity.getIncomeType()) {
+            case 0:
+                sSpinner.setSelection(0);
+                break;
+            case 1:
+                sSpinner.setSelection(1);
+                break;
+        }
+        oldIncomeEntity = incomeEntity;
+        Log.d(TAG, "alterIncomeEntities 4: " + oldIncomeEntity.toString());
+        money.setText(incomeEntity.getIncomeMoney());
+        remark.setText(incomeEntity.getIncomeRemark());
+        time.setText(incomeEntity.getDate());
+        tallyCancelLayout.setVisibility(View.VISIBLE);
+        alter = true;
     }
 
-    @OnClick({R.id.tally_save,R.id.time})
+    @OnClick({R.id.tally_confirm,R.id.time,R.id.tally_cancel})
     public void onViewClicked(View view) {
 //        ArrayList<IncomeEntity> incomeEntities = new ArrayList<>();
 //        EventBus.getDefault().post();
         switch (view.getId()){
-            case R.id.tally_save:
+            case R.id.tally_confirm:
                 if (TextUtils.isEmpty(remark.getText().toString()) && TextUtils.isEmpty(money.getText().toString())){
                     ToastUtil.toast(getContext(),getString(R.string.no_remark_amount_toast_text));
                 }else if (TextUtils.isEmpty(remark.getText().toString())){
@@ -153,6 +175,7 @@ public class TallyFragment extends Fragment {
                             imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                         }
                     }
+                    if (!alter) tallyCancelLayout.setVisibility(View.GONE);
                 }
                 break;
             case R.id.time:
@@ -173,6 +196,13 @@ public class TallyFragment extends Fragment {
                     }
                 });
                 break;
+            case R.id.tally_cancel:
+                sSpinner.setSelection(0);
+                remark.setText("");
+                money.setText("");
+                initTime();
+                tallyCancelLayout.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -185,31 +215,59 @@ public class TallyFragment extends Fragment {
                 Remark = String.valueOf(remark.getText());
                 Money = String.valueOf(money.getText());
                 try {
-                    incomeEntity = new IncomeEntity();
-                    incomeEntity.setIncomeType(payment);
-                    incomeEntity.setIncomeRemark(Remark);
-                    incomeEntity.setIncomeMoney(Money);
-                    incomeEntity.setIncomeTime(Time);
-                    incomeEntity.setDate(dateStr);
+                    Log.d(TAG, "doConfirm: alter = " + alter);
+                    newIncomeEntity = new IncomeEntity();
+                    if (alter) {
+                        newIncomeEntity.setId(oldIncomeEntity.getId());
+                    }
+                    newIncomeEntity.setIncomeType(payment);
+                    newIncomeEntity.setIncomeRemark(Remark);
+                    newIncomeEntity.setIncomeMoney(Money);
+                    newIncomeEntity.setIncomeTime(Time);
+                    newIncomeEntity.setDate(dateStr);
                     remark.setText("");
                     money.setText("");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            MyDataBase.getInstance().getIncomeDao().insert(incomeEntity);
+                if (oldIncomeEntity.getIncomeType() == newIncomeEntity.getIncomeType() && oldIncomeEntity.getIncomeTime() == newIncomeEntity.getIncomeTime() && oldIncomeEntity.getIncomeRemark().equals(newIncomeEntity.getIncomeRemark()) && oldIncomeEntity.getIncomeMoney() == newIncomeEntity.getIncomeMoney())
+                    noAlter = true;
+                Log.d(TAG, "alterIncomeEntities 5: " + newIncomeEntity.toString());
+                    if (alter && !noAlter){
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d(TAG, "old alterIncomeEntities 6: " + oldIncomeEntity.toString());
+                                MyDataBase.getInstance().getIncomeDao().update(newIncomeEntity);
+                                Log.d(TAG, "new alterIncomeEntities 6: " + newIncomeEntity.toString());
+                            }
+                        }).start();
+                        for (int i = 0;i < MainActivity.getIncomeEntities().size(); i ++) {
+                            if (MainActivity.getIncomeEntities().get(i).equals(oldIncomeEntity)){
+                                MainActivity.getIncomeEntities().remove(i);
+                                MainActivity.getIncomeEntities().add(i,newIncomeEntity);
+                                MainActivity.getIncomeRecycleAdapter().notifyDataSetChanged();
+                            }
                         }
-                    }).start();
-                    MainActivity.getIncomeRecycleAdapter().addItem(incomeEntity);
+                    }else {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                MyDataBase.getInstance().getIncomeDao().insert(newIncomeEntity);
+                            }
+                        }).start();
+                        MainActivity.getIncomeRecycleAdapter().addItem(newIncomeEntity);
+                    }
+                    ToastUtil.toast(getActivity(), getString(R.string.tallyFragment_dialog_btn_confirm_succeed_hint_text));
                     SummarizingFragment.getYearClassificationSummary().updateView();
                     SummarizingFragment.getMonthClassificationSummary().updateView();
                     SummarizingFragment.getDayClassificationSummary().updateView();
-                    ToastUtil.toast(getActivity(), getString(R.string.tallyFragment_dialog_btn_confirm_succeed_hint_text));
                     initTime();
+                    alter = false;
+                    tallyCancelLayout.setVisibility(View.GONE);
                     customDialog.dismiss();
                 } catch (Exception e) {
                     e.printStackTrace();
                     remark.setText(Remark);
                     money.setText(Money);
+                    alter = false;
                     ToastUtil.toast(getActivity(), getString(R.string.tallyFragment_dialog_btn_confirm_defeated_hint_text));
                     customDialog.dismiss();
                 }

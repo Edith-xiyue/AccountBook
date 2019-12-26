@@ -203,7 +203,9 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
 
         @Override
         public void onLongPress(MotionEvent e) {
-            CustomDialog customDialog = new CustomDialog(sContext, sContext.getString(R.string.incomeRecycleAdapter_dialog_text_show_particular), sContext.getString(R.string.incomeRecycleAdapter_dialog_text_delete_item));
+            Log.d(TAG, "alterIncomeEntities 1: " + filterIncomeEntities.get(sPosition).toString());
+            String[] strings = { sContext.getString(R.string.incomeRecycleAdapter_dialog_text_show_particular), sContext.getString(R.string.incomeRecycleAdapter_dialog_text_delete_item),sContext.getString(R.string.incomeRecycleAdapter_dialog_text_alter_item)};
+            CustomDialog customDialog = new CustomDialog(sContext,strings);
             customDialog.setItemClickListener(new CustomDialog.ItemClickListenerInterface() {
                 @Override
                 public void showParticular() {
@@ -214,6 +216,13 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
                 @Override
                 public void deleteItem() {
                     deleteItemDialog(sContext,sPosition);
+                    customDialog.dismiss();
+                }
+
+                @Override
+                public void alterItem() {
+                    Log.d(TAG, "alterIncomeEntities 2: " + filterIncomeEntities.get(sPosition).toString());
+                    EventBus.getDefault().post(filterIncomeEntities.get(sPosition));
                     customDialog.dismiss();
                 }
             });

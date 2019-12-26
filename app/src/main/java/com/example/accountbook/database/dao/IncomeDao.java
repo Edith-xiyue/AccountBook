@@ -36,4 +36,7 @@ public interface IncomeDao {
 
     @Query("select * from income_info where income_time =:time")
     IncomeEntity getIncomeEntity (long time);
+
+    @Query("select * from income_info where id =:id")
+    IncomeEntity getIncomeEntity (int id);
 }

@@ -26,6 +26,7 @@
     <string name="incomeRecycleAdapter_dialog_btn_cancel_hint_text">Undelete</string>
     <string name="incomeRecycleAdapter_dialog_text_show_particular">View details</string>
     <string name="incomeRecycleAdapter_dialog_text_delete_item">Delete this record</string>
+    <string name="incomeRecycleAdapter_dialog_text_alter_item">Alter this record</string>
     <string name="select_error_time_toast_text">Please choose the right time!</string>
     <string name="input_no_year_toast_text">Please enter year!</string>
     <string name="input_no_month_toast_text">Please enter month!</string>

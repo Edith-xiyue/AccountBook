@@ -20,6 +20,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +46,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = MainActivity.this;
+        EventBus.getDefault().register(this);
         CustomStatusBarBackground.customStatusBarTransparent(this);
         initIncomeEntities();
         initView();
         setEnterFragment();
         setView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void alterParticular(IncomeEntity incomeEntity){
+        FragmentTransaction fragmentTransaction = sFragmentManager.beginTransaction();
+        hideFragment(fragmentTransaction);
+        fragmentTransaction.show(tallyFragment);
+        fragmentTransaction.commit();
+        mBottomNavigationBar.selectTab(0);
     }
 
     private void initView() {

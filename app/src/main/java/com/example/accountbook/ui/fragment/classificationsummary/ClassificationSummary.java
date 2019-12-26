@@ -85,7 +85,7 @@ public class ClassificationSummary extends Fragment {
     public void updateView(){
         String filterString;
         if (YEAR){
-            if (filterYear == null) return;
+            if (filterYear == null || getContext() == null) return;
             filterString = String.valueOf(filterYear.getText());
             incomeEntities = ListFilter.listFilter(filterString);
             initData();
@@ -93,7 +93,7 @@ public class ClassificationSummary extends Fragment {
         }
 
         if (MONTH){
-            if (filterYear == null) return;
+            if (filterYear == null || getContext() == null) return;
             filterString = filterYear.getText() + "-" + filterMonth.getText();
             incomeEntities = ListFilter.listFilter(filterString);
             initData();
@@ -101,7 +101,7 @@ public class ClassificationSummary extends Fragment {
         }
 
         if (DAY){
-            if (filterYear == null) return;
+            if (filterYear == null || getContext() == null) return;
             filterString = filterYear.getText() + "-" + filterMonth.getText() + "-" + filterDay.getText();
             incomeEntities = ListFilter.listFilter(filterString);
             initData();
