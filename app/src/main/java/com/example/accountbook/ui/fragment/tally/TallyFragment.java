@@ -219,6 +219,8 @@ public class TallyFragment extends Fragment {
                     newIncomeEntity = new IncomeEntity();
                     if (alter) {
                         newIncomeEntity.setId(oldIncomeEntity.getId());
+                        if (oldIncomeEntity.getIncomeType() == newIncomeEntity.getIncomeType() && oldIncomeEntity.getIncomeTime() == newIncomeEntity.getIncomeTime() && oldIncomeEntity.getIncomeRemark().equals(newIncomeEntity.getIncomeRemark()) && oldIncomeEntity.getIncomeMoney() == newIncomeEntity.getIncomeMoney())
+                            noAlter = true;
                     }
                     newIncomeEntity.setIncomeType(payment);
                     newIncomeEntity.setIncomeRemark(Remark);
@@ -227,9 +229,7 @@ public class TallyFragment extends Fragment {
                     newIncomeEntity.setDate(dateStr);
                     remark.setText("");
                     money.setText("");
-                if (oldIncomeEntity.getIncomeType() == newIncomeEntity.getIncomeType() && oldIncomeEntity.getIncomeTime() == newIncomeEntity.getIncomeTime() && oldIncomeEntity.getIncomeRemark().equals(newIncomeEntity.getIncomeRemark()) && oldIncomeEntity.getIncomeMoney() == newIncomeEntity.getIncomeMoney())
-                    noAlter = true;
-                Log.d(TAG, "alterIncomeEntities 5: " + newIncomeEntity.toString());
+                    Log.d(TAG, "alterIncomeEntities 5: " + newIncomeEntity.toString());
                     if (alter && !noAlter){
                         new Thread(new Runnable() {
                             @Override
