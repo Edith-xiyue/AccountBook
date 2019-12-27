@@ -127,6 +127,14 @@ public class TallyFragment extends Fragment {
         }
     }
 
+    public void initView(){
+        sSpinner.setSelection(0);
+        remark.setText("");
+        money.setText("");
+        initTime();
+        tallyCancelLayout.setVisibility(View.GONE);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -197,11 +205,7 @@ public class TallyFragment extends Fragment {
                 });
                 break;
             case R.id.tally_cancel:
-                sSpinner.setSelection(0);
-                remark.setText("");
-                money.setText("");
-                initTime();
-                tallyCancelLayout.setVisibility(View.GONE);
+                initView();
                 break;
         }
     }
@@ -227,8 +231,6 @@ public class TallyFragment extends Fragment {
                     newIncomeEntity.setIncomeMoney(Money);
                     newIncomeEntity.setIncomeTime(Time);
                     newIncomeEntity.setDate(dateStr);
-                    remark.setText("");
-                    money.setText("");
                     Log.d(TAG, "alterIncomeEntities 5: " + newIncomeEntity.toString());
                     if (alter && !noAlter){
                         new Thread(new Runnable() {
@@ -259,9 +261,8 @@ public class TallyFragment extends Fragment {
                     SummarizingFragment.getYearClassificationSummary().updateView();
                     SummarizingFragment.getMonthClassificationSummary().updateView();
                     SummarizingFragment.getDayClassificationSummary().updateView();
-                    initTime();
                     alter = false;
-                    tallyCancelLayout.setVisibility(View.GONE);
+                    initView();
                     customDialog.dismiss();
                 } catch (Exception e) {
                     e.printStackTrace();

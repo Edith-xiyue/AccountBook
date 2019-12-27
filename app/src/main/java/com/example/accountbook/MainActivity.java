@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             sFragmentTransaction.show(particularFragment);
                         }
-
+                        tallyFragment.initView();
                         break;
                     case 2:
                         if (summarizingFragment == null) {
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             sFragmentTransaction.show(summarizingFragment);
                         }
+                        tallyFragment.initView();
                         break;
                 }
                 sFragmentTransaction.commit();

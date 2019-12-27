@@ -1,7 +1,6 @@
 package com.example.accountbook.adapter;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomDialog;
 import com.example.accountbook.tools.ToastUtil;
 import com.example.accountbook.tools.WarningView;
-import com.example.accountbook.ui.fragment.particular.ParticularFragment;
 
 import org.greenrobot.eventbus.EventBus;
 
