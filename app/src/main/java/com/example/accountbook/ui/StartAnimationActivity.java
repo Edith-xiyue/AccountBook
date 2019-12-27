@@ -20,6 +20,7 @@ import com.example.accountbook.MainActivity;
 import com.example.accountbook.R;
 import com.example.accountbook.database.MyDataBase;
 import com.example.accountbook.tools.CustomStatusBarBackground;
+import com.example.accountbook.tools.ToastUtil;
 
 import java.io.File;
 import java.util.Timer;
@@ -80,6 +81,9 @@ public class StartAnimationActivity extends AppCompatActivity {
         set.setInterpolator(new AccelerateInterpolator());
         set.start();
     }
-    public void onBackPressed(){
+
+    @Override
+    public void onBackPressed() {
+        return;
     }
 }
