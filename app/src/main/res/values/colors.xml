@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="color_blue">#1296db</color>
+    <color name="color_black">#000000</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_gray">#8a8a8a</color>
+    <color name="gradient_main_title_startColor">#7DAFDF</color>
+    <color name="gradient_main_title_endColor">#1285E7</color>
+    <color name="circular_bead_item_blue_startColor">#B6D8F5</color>
+    <color name="circular_bead_item_blue_endColor">#E1EEFA</color>
+    <color name="circular_bead_item_green_startColor">#89E496</color>
+    <color name="circular_bead_item_green_endColor">#D4F7CF</color>
+    <color name="circular_bead_item_red_startColor">#EE6D7F</color>
+    <color name="circular_bead_item_red_endColor">#F5CDCD</color>
+    <color name="custom_spinner_textColor">#251300</color>
+    <color name="color_red">@android:color/holo_red_light</color>
+    <color name="color_green">@android:color/holo_green_light</color>
+    <color name="color_transparent">@android:color/transparent</color>
+    <color name="main_fragment_background_color">#FFFFCC</color>
+    <color name="fragment_summarizing_tabLayout_background_color">#F3F37B</color>
+</resources>
