@@ -243,9 +243,9 @@ public class CustomDialog extends Dialog {
             customDatePicker.init(presentYear, presentMonth, presentDay, new DatePicker.OnDateChangedListener() {
                 @Override
                 public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    if (presentYear < year)
+                    if (presentYear < year) {
                         errorTime = true;
-                    else{
+                    } else if (presentYear == year){
                         if (presentMonth < monthOfYear){
                             errorTime = true;
                         }else {
@@ -263,6 +263,11 @@ public class CustomDialog extends Dialog {
                                 MainActivity.getDateStringText().setMonth(monthOfYear);
                             }
                         }
+                    }else {
+                        errorTime = false;
+                        MainActivity.getDateStringText().setDay(dayOfMonth);
+                        MainActivity.getDateStringText().setYear(year);
+                        MainActivity.getDateStringText().setMonth(monthOfYear);
                     }
                 }
             });

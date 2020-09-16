@@ -3,6 +3,8 @@ package com.example.accountbook.ui.fragment.classificationsummary;
 import android.graphics.Color;
 import android.icu.text.DecimalFormat;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +18,9 @@ import androidx.fragment.app.Fragment;
 import com.example.accountbook.R;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.ArcView;
+import com.example.accountbook.tools.DateCalculation;
 import com.example.accountbook.tools.ListFilter;
+import com.example.accountbook.tools.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,21 +45,16 @@ public class ClassificationSummary extends Fragment {
     private boolean YEAR = false;
     private boolean MONTH = false;
     private boolean DAY = false;
-    private String year = String.valueOf(calendar.get(Calendar.YEAR));
-    private String month = String.valueOf(calendar.get(Calendar.MONTH)+1);
-    private String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-    private int lastYear;
-    private int lastMonth;
-    private int lastDay;
-    private int newYear = Integer.parseInt(year);
-    private int newMonth = Integer.parseInt(month);
-    private int newDay = Integer.parseInt(day);
+    private String normlYear = String.valueOf(calendar.get(Calendar.YEAR));
+    private String normlMonth = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+    private String normlDay = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
 
     public ClassificationSummary(String DateType) {
         if (DateType.contains("year")) YEAR = true;
         if (DateType.contains("month")) MONTH = true;
         if (DateType.contains("day")) DAY = true;
     }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,45 +80,38 @@ public class ClassificationSummary extends Fragment {
         return rootView;
     }
 
-    public void updateView(){
-        String filterString;
-        if (YEAR){
-            if (filterYear == null || getContext() == null) return;
-            newYear = Integer.parseInt(filterYear.getText().toString());
-            if (newYear == lastYear) return;
-            filterString = filterYear.getText().toString();
-            incomeEntities = ListFilter.listFilter(filterString);
-            initData();
+    public void updateView() {
+        if (filterYear == null || getContext() == null) {
+            return;
         }
+        String filterDate = new String();
+        String year = filterYear.getText().toString();
+        String month = filterMonth.getText().toString();
+        String day = filterDay.getText().toString();
 
-        if (MONTH){
-            if (filterYear == null || getContext() == null) return;
-            newYear = Integer.parseInt(filterYear.getText().toString());
-            newMonth = Integer.parseInt(filterMonth.getText().toString());
-            if (lastYear == newYear && lastMonth == newMonth) return;
-            if (newMonth < 10)
-                filterString = newYear + "-0" + newMonth;
-            else
-                filterString = newYear + "-" + newMonth;
-            incomeEntities = ListFilter.listFilter(filterString);
-            initData();
-        }
+        filterDate = DateCalculation.exactDate(year, month, day, getContext());
+        whetherUpdateData(year, month, day,filterDate);
+    }
 
-        if (DAY){
-            if (filterYear == null || getContext() == null) return;
-            newYear = Integer.parseInt(filterYear.getText().toString());
-            newDay = Integer.parseInt(filterDay.getText().toString());
-            newMonth = Integer.parseInt(filterMonth.getText().toString());
-            if (newYear == lastYear && newMonth == lastMonth && newDay == lastDay) return;
-            if (newMonth < 10)
-                filterString = newYear + "-0" + newMonth;
-            else
-                filterString = newYear + "-" + newMonth;
-            if (newDay < 10)
-                filterString = filterString + "-0" + newDay;
-            else
-                filterString =filterString + "-" + newDay;
-            incomeEntities = ListFilter.listFilter(filterString);
+    private void whetherUpdateData(String year, String month, String day,String filterDate) {
+        if (TextUtils.isEmpty(year)) {
+            ToastUtil.toast(getContext(), getContext().getString(R.string.input_no_year_toast_text));
+        } else if (TextUtils.isEmpty(month)) {
+            if (MONTH || DAY) {
+                ToastUtil.toast(getContext(), getContext().getString(R.string.input_no_month_toast_text));
+            }else {
+                incomeEntities = ListFilter.listFilter(filterDate);
+                initData();
+            }
+        } else if (TextUtils.isEmpty(day)) {
+            if (DAY) {
+                ToastUtil.toast(getContext(), getContext().getString(R.string.input_no_day_toast_text));
+            }else {
+                incomeEntities = ListFilter.listFilter(filterDate);
+                initData();
+            }
+        }else {
+            incomeEntities = ListFilter.listFilter(filterDate);
             initData();
         }
     }
@@ -129,22 +121,29 @@ public class ClassificationSummary extends Fragment {
         super.onHiddenChanged(hidden);
     }
 
-    public  void initData(){
-        lastYear = newYear;
-        lastMonth = newMonth;
-        lastDay = newDay;
+    public void initData() {
+        if (YEAR){
+            Log.d(TAG, "initData: YEAR");
+        }else if (MONTH){
+            Log.d(TAG, "initData: MONTH");
+        }else {
+            Log.d(TAG, "initData: DAY");
+        }
+        Log.d(TAG, "initData: 被调用");
         double sMoneySum = 0;
         double zMoneySum = 0;
-        for (int i = 0;i < incomeEntities.size();i ++){
-            if (incomeEntities.get(i).getIncomeType() == 0){
+
+        for (int i = 0; i < incomeEntities.size(); i++) {
+            Log.d(TAG, "initData: incomeEntities.get(i).getIncomeMoney() = " + incomeEntities.get(i).getIncomeMoney());
+            if (incomeEntities.get(i).getIncomeType() == 0) {
                 zMoneySum += Double.parseDouble(incomeEntities.get(i).getIncomeMoney());
-            }else
+            } else
                 sMoneySum += Double.parseDouble(incomeEntities.get(i).getIncomeMoney());
         }
-        if (zMoneySum ==0 && sMoneySum == 0){
+        if (zMoneySum == 0 && sMoneySum == 0) {
             arcView.setVisibility(View.GONE);
             noRecord.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             arcView.setVisibility(View.VISIBLE);
             noRecord.setVisibility(View.GONE);
             Proportion sProportion = new Proportion();
@@ -174,40 +173,40 @@ public class ClassificationSummary extends Fragment {
         }
     }
 
-    public void initView(){
+    public void initView() {
         arcView.setMaxNum(2);
-        arcView.setColor(0,Color.parseColor("#EE6D7F"));
-        arcView.setColor(1,Color.parseColor("#89E496"));
+        arcView.setColor(0, Color.parseColor("#EE6D7F"));
+        arcView.setColor(1, Color.parseColor("#89E496"));
         arcView.invalidate();
     }
 
     public void initincomeEntities() {
-        if (YEAR){
-            filterYear.setText(year);
-            incomeEntities = ListFilter.listFilter(year);
+        if (YEAR) {
+            filterYear.setText(normlYear);
+            incomeEntities = ListFilter.listFilter(normlYear);
         }
-        if (MONTH){
-            filterYear.setText(year);
-            filterMonth.setText(month);
+        if (MONTH) {
+            filterYear.setText(normlYear);
+            filterMonth.setText(normlMonth);
             filterMonth.setVisibility(View.VISIBLE);
             textMonth.setVisibility(View.VISIBLE);
-            if (Integer.parseInt(month) < 10 && !month.contains("0"))
-                month = "0" + month;
-            incomeEntities = ListFilter.listFilter(year + "-" + month);
+            if (Integer.parseInt(normlMonth) < 10 && !normlMonth.contains("0"))
+                normlMonth = "0" + normlMonth;
+            incomeEntities = ListFilter.listFilter(normlYear + "-" + normlMonth);
         }
-        if (DAY){
-            filterYear.setText(year);
-            filterMonth.setText(month);
-            filterDay.setText(day);
+        if (DAY) {
+            filterYear.setText(normlYear);
+            filterMonth.setText(normlMonth);
+            filterDay.setText(normlDay);
             filterMonth.setVisibility(View.VISIBLE);
             filterDay.setVisibility(View.VISIBLE);
             textDay.setVisibility(View.VISIBLE);
             textMonth.setVisibility(View.VISIBLE);
-            if (Integer.parseInt(month) < 10 && !month.contains("0"))
-                month = "0" + month;
-            if (Integer.parseInt(day) < 10 && !day.contains("0"))
-                day = "0" + day;
-            incomeEntities = ListFilter.listFilter(year + "-" + month + "-" + day);
+            if (Integer.parseInt(normlMonth) < 10 && !normlMonth.contains("0"))
+                normlMonth = "0" + normlMonth;
+            if (Integer.parseInt(normlDay) < 10 && !normlDay.contains("0"))
+                normlDay = "0" + normlDay;
+            incomeEntities = ListFilter.listFilter(normlYear + "-" + normlMonth + "-" + normlDay);
         }
     }
 
@@ -215,7 +214,15 @@ public class ClassificationSummary extends Fragment {
         return arcView;
     }
 
-    class  Proportion{
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+        initincomeEntities();
+        initData();
+    }
+
+    class Proportion {
         double money;
         String type;
     }

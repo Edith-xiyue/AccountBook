@@ -28,8 +28,12 @@
     <string name="incomeRecycleAdapter_dialog_text_delete_item">删除此记录</string>
     <string name="incomeRecycleAdapter_dialog_text_alter_item">修改此记录</string>
     <string name="select_error_time_toast_text">请选择正确的时间！</string>
+    <string name="edit_error_year_toast_text">请输入正确的年份！</string>
+    <string name="edit_error_month_toast_text">请输入正确的月份！</string>
+    <string name="edit_error_day_toast_text">请输入正确的日期！</string>
     <string name="input_no_year_toast_text">请输入年份！</string>
     <string name="input_no_month_toast_text">请输入月份！</string>
+    <string name="input_no_day_toast_text">请输入日期！</string>
     <string name="two_decimal_places_warning">最多输入两位小数</string>
     <string name="no_remark_amount_toast_text">请填写金额和备注。</string>
     <string name="no_remark_toast_text">请填写备注。</string>

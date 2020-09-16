@@ -28,8 +28,12 @@
     <string name="incomeRecycleAdapter_dialog_text_delete_item">Delete this record</string>
     <string name="incomeRecycleAdapter_dialog_text_alter_item">Alter this record</string>
     <string name="select_error_time_toast_text">Please choose the right time!</string>
+    <string name="edit_error_year_toast_text">Please enter the correct year!</string>
+    <string name="edit_error_month_toast_text">Please enter the correct month!</string>
+    <string name="edit_error_day_toast_text">Please enter the correct day!</string>
     <string name="input_no_year_toast_text">Please enter year!</string>
     <string name="input_no_month_toast_text">Please enter month!</string>
+    <string name="input_no_day_toast_text">Please enter day!</string>
     <string name="two_decimal_places_warning">Enter at most two decimal places</string>
     <string name="no_remark_amount_toast_text">Please fill in the amount and remarks.</string>
     <string name="no_remark_toast_text">Please fill in the remarks.</string>
