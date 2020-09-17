@@ -27,6 +27,7 @@ import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomDialog;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.CustomTextWatcher;
+import com.example.accountbook.tools.EventBusConfig;
 import com.example.accountbook.tools.ToastUtil;
 import com.example.accountbook.ui.fragment.summarizing.SummarizingFragment;
 
@@ -142,9 +143,9 @@ public class TallyFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void alterParticular(IncomeEntity incomeEntity){
-        Log.d(TAG, "alterIncomeEntities 3: " + incomeEntity.toString());
-        switch (incomeEntity.getIncomeType()) {
+    public void alterParticular(EventBusConfig.alterIncomeEntitie entity){
+        Log.d(TAG, "alterIncomeEntities 3: " + entity.toString());
+        switch (entity.getEntity().getIncomeType()) {
             case 0:
                 sSpinner.setSelection(0);
                 break;
@@ -152,11 +153,11 @@ public class TallyFragment extends Fragment {
                 sSpinner.setSelection(1);
                 break;
         }
-        oldIncomeEntity = incomeEntity;
+        oldIncomeEntity = entity.getEntity();
         Log.d(TAG, "alterIncomeEntities 4: " + oldIncomeEntity.toString());
-        money.setText(incomeEntity.getIncomeMoney());
-        remark.setText(incomeEntity.getIncomeRemark());
-        time.setText(incomeEntity.getDate());
+        money.setText(entity.getEntity().getIncomeMoney());
+        remark.setText(entity.getEntity().getIncomeRemark());
+        time.setText(entity.getEntity().getDate());
         tallyCancelLayout.setVisibility(View.VISIBLE);
         alter = true;
     }

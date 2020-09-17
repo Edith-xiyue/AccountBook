@@ -20,10 +20,12 @@ import com.example.accountbook.database.MyDataBase;
 import com.example.accountbook.database.dao.IncomeDao;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomDialog;
+import com.example.accountbook.tools.EventBusConfig;
 import com.example.accountbook.tools.ToastUtil;
-import com.example.accountbook.tools.WarningView;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
 
     private Context mContext;
     private int mPosition;
+    private int deletePosition = 0;
     private TextView textView;
     private boolean noIncome = false;
     private List<IncomeEntity> sourceIncomeEntities = new ArrayList<>();
@@ -60,8 +63,21 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
     }
 
     @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull IncomeRecycleHolder holder, int position) {
         this.mPosition = position;
+        this.deletePosition = position;
         holder.setsPosition(position);
     }
 
@@ -100,11 +116,11 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
                     filterIncomeEntities = filteredList;
                 }
                 if (filterIncomeEntities.size() == 0){
-                    WarningView warningView = new WarningView();
+                    EventBusConfig.WarningView warningView= new EventBusConfig.WarningView();
                     warningView.setWarningViewShow(true);
                     EventBus.getDefault().post(warningView);
                 }else {
-                    WarningView warningView = new WarningView();
+                    EventBusConfig.WarningView warningView= new EventBusConfig.WarningView();
                     warningView.setWarningViewShow(false);
                     EventBus.getDefault().post(warningView);
                 }
@@ -118,6 +134,16 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
                 notifyDataSetChanged();
             }
         };
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void deleteItem(EventBusConfig.deleteIncomeEntitie delete){
+        sourceIncomeEntities.remove(deletePosition);
+        filterIncomeEntities.remove(mPosition);
+        notifyItemRemoved(mPosition);
+        IncomeRecycleAdapter.this.notifyDataSetChanged();
+        ToastUtil.toast(mContext,mContext.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text));
     }
 
     class IncomeRecycleHolder extends RecyclerView.ViewHolder implements GestureDetector.OnGestureListener{
@@ -220,7 +246,7 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
                 @Override
                 public void alterItem() {
                     Log.d(TAG, "alterIncomeEntities 2: " + filterIncomeEntities.get(sPosition).toString());
-                    EventBus.getDefault().post(filterIncomeEntities.get(sPosition));
+                    EventBus.getDefault().post(new EventBusConfig.alterIncomeEntitie(filterIncomeEntities.get(sPosition)));
                     customDialog.dismiss();
                 }
             });
@@ -245,19 +271,28 @@ public class IncomeRecycleAdapter extends RecyclerView.Adapter<IncomeRecycleAdap
             @Override
             public void doConfirm() {
                 try{
-                    IncomeEntity entity = sourceIncomeEntities.get(position);
+                    IncomeEntity entity = null;
+                    int filtered = filterIncomeEntities.size();
+                    if(filtered != 0){
+                        entity = filterIncomeEntities.get(position);
+                        for (int i = 0;i < sourceIncomeEntities.size();i++){
+                            if (sourceIncomeEntities.get(i).equals(entity)){
+                                deletePosition = i;
+                            }
+                        }
+                    }else {
+                        entity = sourceIncomeEntities.get(position);
+                    }
+                    IncomeEntity finalEntity = entity;
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
                             IncomeDao incomeDao = MyDataBase.getInstance().getIncomeDao();
-                            IncomeEntity entity1 = incomeDao.getIncomeEntity(entity.getIncomeTime());
+                            IncomeEntity entity1 = incomeDao.getIncomeEntity(finalEntity.getIncomeTime());
                             incomeDao.delete(entity1);
+                            EventBus.getDefault().post(new EventBusConfig.deleteIncomeEntitie());
                         }
                     }).start();
-                    sourceIncomeEntities.remove(position);
-                    notifyItemRemoved(position);
-                    IncomeRecycleAdapter.this.notifyDataSetChanged();
-                    ToastUtil.toast(context,context.getString(R.string.incomeRecycleAdapter_dialog_btn_confirm_succeed_hint_text));
 
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -1,7 +1,6 @@
 package com.example.accountbook.ui.fragment.particular;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +20,7 @@ import com.example.accountbook.adapter.IncomeRecycleAdapter;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.DateCalculation;
-import com.example.accountbook.tools.ToastUtil;
-import com.example.accountbook.tools.WarningView;
+import com.example.accountbook.tools.EventBusConfig;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -72,6 +70,7 @@ public class ParticularFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        recyclerView.setAdapter(null);
         EventBus.getDefault().unregister(this);
     }
 
@@ -88,7 +87,7 @@ public class ParticularFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void viewUpdate(WarningView warningView) {
+    public void viewUpdate(EventBusConfig.WarningView warningView) {
         if (warningView.isWarningViewShow()) {
             noIncomeWarning.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);

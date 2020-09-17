@@ -10,6 +10,7 @@ import com.example.accountbook.adapter.IncomeRecycleAdapter;
 import com.example.accountbook.database.table.IncomeEntity;
 import com.example.accountbook.tools.CustomStatusBarBackground;
 import com.example.accountbook.tools.DateStringText;
+import com.example.accountbook.tools.EventBusConfig;
 import com.example.accountbook.tools.ToastUtil;
 import com.example.accountbook.ui.fragment.particular.ParticularFragment;
 import com.example.accountbook.ui.fragment.tally.TallyFragment;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void alterParticular(IncomeEntity incomeEntity){
+    public void alterParticular(EventBusConfig.alterIncomeEntitie entity){
         FragmentTransaction fragmentTransaction = sFragmentManager.beginTransaction();
         hideFragment(fragmentTransaction);
         fragmentTransaction.show(tallyFragment);
